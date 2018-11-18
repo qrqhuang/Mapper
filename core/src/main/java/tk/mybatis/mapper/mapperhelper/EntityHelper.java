@@ -24,12 +24,14 @@
 
 package tk.mybatis.mapper.mapperhelper;
 
+import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.MapperException;
 import tk.mybatis.mapper.entity.Config;
 import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.entity.EntityTable;
 import tk.mybatis.mapper.mapperhelper.resolve.DefaultEntityResolve;
 import tk.mybatis.mapper.mapperhelper.resolve.EntityResolve;
+import tk.mybatis.mapper.util.MetaObjectUtil;
 
 import java.util.Map;
 import java.util.Set;
@@ -158,6 +160,24 @@ public class EntityHelper {
         //创建并缓存EntityTable
         EntityTable entityTable = resolve.resolveEntity(entityClass, config);
         entityTableMap.put(entityClass, entityTable);
+    }
+
+    /**
+     * 通过反射设置主键属性
+     * @param entityClass
+     * @param ms
+     */
+    public static void processKeyProperties(Class<?> entityClass, MappedStatement ms){
+        Set<EntityColumn> pkColumns = getPKColumns(entityClass);
+        if(pkColumns.size() > 0){
+            String[] keyProperties = new String[pkColumns.size()];
+            int i = 0;
+            for(EntityColumn pkColumn : pkColumns){
+                keyProperties[i++] = pkColumn.getProperty();
+            }
+
+            MetaObjectUtil.forObject(ms).setValue("keyProperties", keyProperties);
+        }
     }
 
     /**

@@ -44,6 +44,8 @@ public class BaseInsertProvider extends MapperTemplate {
 
     public String insert(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
+        EntityHelper.processKeyProperties(entityClass, ms);
+
         StringBuilder sql = new StringBuilder();
         //获取全部列
         Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
@@ -77,6 +79,8 @@ public class BaseInsertProvider extends MapperTemplate {
 
     public String insertSelective(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
+        EntityHelper.processKeyProperties(entityClass, ms);
+
         StringBuilder sql = new StringBuilder();
         //获取全部列
         Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
@@ -149,4 +153,6 @@ public class BaseInsertProvider extends MapperTemplate {
 
         }
     }
+
+
 }
